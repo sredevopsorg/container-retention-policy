@@ -1,7 +1,7 @@
 [![release](https://img.shields.io/github/v/release/sredevopsorg/container-retention-policy)](https://github.com/sredevopsorg/container-retention-policy/releases/latest)
 [![coverage](https://codecov.io/gh/snok/drf-openapi-tester/branch/master/graph/badge.svg)](https://codecov.io/gh/sredevopsorg/container-retention-policy)
 
-# 📘 GHCR Container Retention Policy
+# 📘 GHCR Container Retention Policy (Forked from @snok )
 
 A GitHub Action for deleting old image versions from the GitHub container registry.
 
@@ -56,6 +56,7 @@ For an organization, a full example might look something like this:
 name: Delete old container images
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: "0 0 * * *"  # every day at midnight
 
@@ -94,6 +95,7 @@ While for a personal account, something like this might do:
 name: Delete old container images
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: '0 0 0 * *'  # the first day of the month
 
@@ -118,6 +120,7 @@ An example showing 2 different retention policies based on image tags format:
 name: Delete old container images
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: '0 0 0 * *'  # the first day of the month
 
@@ -152,6 +155,7 @@ An example using `${{ secrets.GITHUB_TOKEN }}` in a repository with package name
 name: Delete old container images
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: '0 0 0 * *'  # the first day of the month
 

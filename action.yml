@@ -1,4 +1,4 @@
-name: 'Container Retention Policy (Forked)'
+name: 'Container Retention Policy (Forked from @snok)'
 description: 'Create a retention policy for your GHCR hosted container images'
 branding:
   icon: "book"

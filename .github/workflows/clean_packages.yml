@@ -2,7 +2,10 @@ name: Delete old container images
 
 on: workflow_dispatch
 
-permissions: write-all
+permissions:
+  contents: read
+  packages: write
+  id-token: write
 
 jobs:
   build-containers:
@@ -11,9 +14,20 @@ jobs:
     env:
       IMAGE: ghcr.io/sredevopsorg/ghcr-retention-policy-test
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.ref }}
+          persist-credentials: false
+      
       - uses: docker/setup-buildx-action@v1
-      - run: docker login ghcr.io -u ${{ github.actor }} --password-stdin <<< ${{ github.token }}
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@master
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
       # Each build should be different because of the $RANDOM addition
       - name: Build latest
         run: |
@@ -70,12 +84,14 @@ jobs:
       - name: Delete images more than 2 seconds old
         uses: sredevopsorg/container-retention-policy@main
         id: delete-images
+        continue-on-error: true
         with:
           image-names: ghcr-retention-policy-test
-          cut-off: 2 seconds ago UTC+2
-          account-type: personal
+          cut-off: 2 seconds ago UTC+0
+          account-type: org
           token: ${{ github.token }}
           skip-tags: ${{ steps.image-version.outputs.image-versions }}
+        
 
       - name: Write skipped tags to cache
         run: |
