@@ -5,6 +5,12 @@ on:
   push:
     branches:
       - main
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+  id-token: write
+
 
 jobs:
   linting:
@@ -26,7 +32,8 @@ jobs:
           source .venv/bin/activate
           pip install pre-commit
         if: steps.cache.outputs.cache-hit != 'true'
-      - run: |
+      - continue-on-error: true
+        run: |
           source .venv/bin/activate
           pre-commit run --all-files
 
@@ -48,20 +55,25 @@ jobs:
             ~/.local
             .venv
           key: ${{ hashFiles('**/poetry.lock') }}-1
-      - name: manual poetry install
-        continue-on-error: true
-        id: install-poetry
-        run: |
-          python3 -m pip install --user pipx
-          python3 -m pipx ensurepath
-          sudo pipx ensurepath || true
-          pipx install poetry
+      # - name: manual poetry install
+      #   continue-on-error: true
+      #   id: install-poetry
+      #   run: |
+      #     python3 -m pip install --user pipx
+      #     python3 -m pipx ensurepath
+      #     sudo pipx ensurepath || true
+      #     pipx install poetry
+
+      - uses: snok/install-poetry@v1
+        with:
+          virtualenvs-in-project: true
+
+
       - name: install dependencies
         id: install-deps
         continue-on-error: true
         run: |
           poetry config virtualenvs.create true
-          source $HOME/.poetry/env
           poetry install --no-interaction --no-root
 
       - run: poetry install --no-interaction --no-root

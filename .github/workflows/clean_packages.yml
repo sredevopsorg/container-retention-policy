@@ -89,6 +89,7 @@ jobs:
           image-names: ghcr-retention-policy-test
           cut-off: 2 seconds ago UTC+0
           account-type: org
+          org-name: sredevopsorg
           token: ${{ github.token }}
           skip-tags: ${{ steps.image-version.outputs.image-versions }}
         

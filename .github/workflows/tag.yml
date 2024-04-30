@@ -4,12 +4,20 @@ on:
   release:
     types: [published, edited]
 
+permissions:
+  contents: write
+  pull-requests: write
+  actions: write
+  
+  
+
+
 jobs:
   tag-v1:
     name: Tag v1
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Update tag
         run: |
           major_tag="$(python .github/get_version.py "${GITHUB_REF}" major)"
@@ -18,4 +26,4 @@ jobs:
           git tag $minor_tag
           git push origin HEAD:refs/heads/master --tags --force
         env:
-          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
