@@ -2,6 +2,8 @@ name: Delete old container images
 
 on: workflow_dispatch
 
+permissions: write-all
+
 jobs:
   build-containers:
     name: Build a few images
