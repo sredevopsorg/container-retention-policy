@@ -1,7 +1,9 @@
 [![release](https://img.shields.io/github/v/release/sredevopsorg/container-retention-policy)](https://github.com/sredevopsorg/container-retention-policy/releases/latest)
 [![coverage](https://codecov.io/gh/snok/drf-openapi-tester/branch/master/graph/badge.svg)](https://codecov.io/gh/sredevopsorg/container-retention-policy)
 
-# 📘 GHCR Container Retention Policy (Forked from @snok )
+# 📘 GHCR Container Retention Policy (Forked)
+
+This is a work from [@snok](https://github.com/snok), forked for analysis and possible improvements.
 
 A GitHub Action for deleting old image versions from the GitHub container registry.
 
@@ -32,7 +34,7 @@ To use the action, simply add it to your GitHub workflow, like this:
     org-name: sredevopsorg
     keep-at-least: 3
     skip-tags: latest
-    token: ${{ secrets.PAT }}
+    token: ${{ secrets.GHCR_TOKEN }}
 ```
 
 Notice image-names supports wildcards.
