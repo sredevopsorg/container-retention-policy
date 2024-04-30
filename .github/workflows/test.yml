@@ -33,7 +33,11 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.ref }}
+          persist-credentials: false
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11.2"
@@ -44,9 +48,22 @@ jobs:
             ~/.local
             .venv
           key: ${{ hashFiles('**/poetry.lock') }}-1
-      - uses: snok/install-poetry@v1
-        with:
-          virtualenvs-in-project: true
+      - name: manual poetry install
+        continue-on-error: true
+        id: install-poetry
+        run: |
+          python3 -m pip install --user pipx
+          python3 -m pipx ensurepath
+          sudo pipx ensurepath || true
+          pipx install poetry
+      - name: install dependencies
+        id: install-deps
+        continue-on-error: true
+        run: |
+          poetry config virtualenvs.create true
+          source $HOME/.poetry/env
+          poetry install --no-interaction --no-root
+
       - run: poetry install --no-interaction --no-root
         if: steps.cache.outputs.cache-hit != 'true'
       - run: source $VENV && pytest main_tests.py --cov-report=xml
