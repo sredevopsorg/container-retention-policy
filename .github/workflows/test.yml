@@ -57,19 +57,10 @@ jobs:
             ~/.local
             .venv
           key: ${{ hashFiles('**/poetry.lock') }}-1
-      # - name: manual poetry install
-      #   continue-on-error: true
-      #   id: install-poetry
-      #   run: |
-      #     python3 -m pip install --user pipx
-      #     python3 -m pipx ensurepath
-      #     sudo pipx ensurepath || true
-      #     pipx install poetry
 
       - uses: snok/install-poetry@v1
         with:
           virtualenvs-in-project: true
-
 
       - name: install dependencies
         id: install-deps
@@ -80,9 +71,12 @@ jobs:
 
       - run: poetry install --no-interaction --no-root
         if: steps.cache.outputs.cache-hit != 'true'
+        
       - run: source $VENV && pytest main_tests.py --cov-report=xml
-      - uses: codecov/codecov-action@v3
+      
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4.0.1
         with:
+          token: ${{ secrets.CODECOV_TOKEN }}
           file: ./coverage.xml
           fail_ci_if_error: true
-          token: ${{ secrets.CODECOV_TOKEN }}
