@@ -14,15 +14,20 @@ jobs:
     env:
       IMAGE: ghcr.io/sredevopsorg/ghcr-retention-policy-test
     steps:
-      - uses: actions/checkout@v4
+      - name: Harden Runner
+        uses: step-security/harden-runner@a4aa98b93cab29d9b1101a6143fb8bce00e2eac4 # v2.7.1
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4.1.4
         with:
           fetch-depth: 0
           ref: ${{ github.ref }}
           persist-credentials: false
       
-      - uses: docker/setup-buildx-action@v1
+      - uses: docker/setup-buildx-action@f211e3e9ded2d9377c8cadc4489a4e38014bc4c9 # v1.7.0
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@master
+        uses: docker/login-action@5f4866a30a54f16a52d2ecb4a3898e9e424939cf # master
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -59,8 +64,13 @@ jobs:
     name: Then delete them
     runs-on: ubuntu-latest
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@a4aa98b93cab29d9b1101a6143fb8bce00e2eac4 # v2.7.1
+        with:
+          egress-policy: audit
+
       - name: Cache image versions to skip
-        uses: actions/cache@v3
+        uses: actions/cache@e12d46a63a90f2fae62d114769bbf2a179198b5c # v3.3.3
         id: cache
         with:
           path: skip-image-versions.txt
@@ -82,7 +92,7 @@ jobs:
           echo "image-versions=$images" >> $GITHUB_OUTPUT
 
       - name: Delete images more than 2 seconds old
-        uses: sredevopsorg/container-retention-policy@main
+        uses: sredevopsorg/container-retention-policy@1dd9e3a5cbc2fec4741dda9b224953d296a80ad1 # main
         id: delete-images
         continue-on-error: true
         with:
