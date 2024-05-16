@@ -92,7 +92,7 @@ jobs:
           echo "image-versions=$images" >> $GITHUB_OUTPUT
 
       - name: Delete images more than 2 seconds old
-        uses: sredevopsorg/container-retention-policy@02d5e52c7b835490e509f98451d8fc99ce427b9c # main
+        uses: sredevopsorg/container-retention-policy@ca66e010287d14b9b60bfec0f8a2ba6ce8776d4f # main
         id: delete-images
         continue-on-error: true
         with:
