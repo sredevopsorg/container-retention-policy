@@ -4,11 +4,12 @@ on: workflow_dispatch
 
 permissions:
   contents: read
-  packages: write
-  id-token: write
 
 jobs:
   build-containers:
+    permissions:
+      packages: write
+      id-token: write
     name: Build a few images
     runs-on: ubuntu-latest
     env:
