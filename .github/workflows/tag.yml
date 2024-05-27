@@ -5,15 +5,17 @@ on:
     types: [published, edited]
 
 permissions:
-  contents: write
-  pull-requests: write
-  actions: write
+  contents: read
   
   
 
 
 jobs:
   tag-v1:
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: write
     name: Tag v1
     runs-on: ubuntu-latest
     steps:
@@ -29,6 +31,6 @@ jobs:
           minor_tag="$(python .github/get_version.py "${GITHUB_REF}" minor)"
           git tag $major_tag
           git tag $minor_tag
-          git push origin HEAD:refs/heads/master --tags --force
+          git push origin HEAD:refs/heads/main --tags --force
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

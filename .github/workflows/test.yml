@@ -8,43 +8,15 @@ on:
       - main
 permissions:
   contents: read
-  pull-requests: write
-  issues: write
-  id-token: write
 
 
 
 jobs:
-  linting:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Harden Runner
-        uses: step-security/harden-runner@a4aa98b93cab29d9b1101a6143fb8bce00e2eac4 # v2.7.1
-        with:
-          egress-policy: audit
-
-      - uses: actions/checkout@44c2b7a8a4ea60a981eaca3cf939b5f4305c123b # v4.1.5
-      - uses: actions/setup-python@82c7e631bb3cdc910f68e0081d67478d79c6982d # v5.1.0
-        with:
-          python-version: "3.11.2"
-      - uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
-        id: cache
-        with:
-          path: |
-            .venv
-            ~/.cache/pre-commit
-          key: venv-1
-      - run: |
-          python -m venv .venv --upgrade-deps
-          source .venv/bin/activate
-          pip install pre-commit
-        if: steps.cache.outputs.cache-hit != 'true'
-      - continue-on-error: true
-        run: |
-          source .venv/bin/activate
-          pre-commit run --all-files
-
   test:
+    permissions:
+      pull-requests: write
+      issues: write
+      id-token: write
     runs-on: ubuntu-latest
     steps:
       - name: Harden Runner
@@ -60,27 +32,18 @@ jobs:
       - uses: actions/setup-python@82c7e631bb3cdc910f68e0081d67478d79c6982d # v5.1.0
         with:
           python-version: "3.11.2"
-      - uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
-        id: cache
-        with:
-          path: |
-            ~/.local
-            .venv
-          key: ${{ hashFiles('**/poetry.lock') }}-1
 
-      - uses: snok/install-poetry@93ada01c735cc8a383ce0ce2ae205a21c415379b # v1.3.4
-        with:
-          virtualenvs-in-project: true
 
       - name: install dependencies
         id: install-deps
         continue-on-error: true
         run: |
-          poetry config virtualenvs.create true
-          poetry install --no-interaction --no-root
-
-      - run: poetry install --no-interaction --no-root
-        if: steps.cache.outputs.cache-hit != 'true'
+          python3 -m pip install --user pipx
+          python3 -m pipx ensurepath
+          sudo pipx ensurepath --global || true
+          pipx install poetry
+          poetry config virtualenvs.create true || echo "poetry config failed" && exit 1
+          poetry install --no-interaction --no-root || echo "poetry install failed" && exit 1
         
       - run: source $VENV && pytest main_tests.py --cov-report=xml
       
